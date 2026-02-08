@@ -1,5 +1,5 @@
 # STELLA - a modular framework for StatioTemporal Event-based Lagrangian particLe trAcking
-We introduce STELLA (v1.0.0), a modular framework for **s**tatio**t**emporal **e**vent-based **L**agrangian partic**L**e tr**A**cking; paper citation 
+We introduce STELLA (v1.0.0), a modular framework for **s**tatio**t**emporal **e**vent-based **L**agrangian partic**L**e tr**A**cking in fluid flows. ; paper citation 
 [STELLA](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 
