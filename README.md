@@ -21,8 +21,9 @@ If you use any of this code, please cite the following publication:
 1) install STELLA
 clone git
 navidate to main folder
-pip -r requirements.txt
-2) OpenEB
+
+`pip install -r requirements.txt`<br>
+3) OpenEB
 To read .raw or .dat files, please install the open source SDK [OpenEB](https://github.com/prophesee-ai/openeb) from prophesee by following the instructions given in the git. Once OpenEB is successfully installed, make sure to add the following files to your python paths:
 
 ```
