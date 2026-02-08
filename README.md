@@ -51,12 +51,12 @@ Larger datasets used as Benchmark and to train artificial neural networks can be
 # Quick start guide
 To start the GUI, run `main.py`. As a small tutorial, the processing of experimental data is exemplified below:
 
-**1) Preprocessing**
+1) **Preprocessing**
     - select `datasets/experimental.npz` as data file and click on `load data`
     - set the accumulation time to 2 ms
 ![Preprocessing](images/Preprocessing.png)
 
-**2) Detection**
+2) **Detection**
     - in the detection tab, select `pixelwise extension` as detection method
     - using default settings, click on `Test run` to perform the detection on the first frame
     - by activating `show found cluster centers`, the middle points of found clusters are marked in the pseudo-frame
@@ -66,7 +66,7 @@ To start the GUI, run `main.py`. As a small tutorial, the processing of experime
     - once detection is finished, statistics are shown on in the left panel und a histogram for cluster duration is given under `Cluster duration` in the right panel
 ![detection2](images/detection2.png)
 
-**3) Tracking**
+3) **Tracking**
     - in the tracking tab, select `Kalman filtering` as tracking method
     - using default settings, click on `Test tracking` to perform tracking for one event cluster
     - the found track for the selected cluster is displayed in the right panel
@@ -77,7 +77,7 @@ To start the GUI, run `main.py`. As a small tutorial, the processing of experime
 ![tracking2](images/tracking2.png)
     - in the `Track duration` panel on the right, a histogram on the track duration is displayed
     
-**4) Validation**
+4) **Validation**
     - in the validation tab, select the `Apply track quality filter` checkbox and click on `Run validation`
     - for visualization, set the `Track window facotr` to 10: valid and invalid tracks are displayed in green and red, respectively
 ![validation](images/validation.png)
