@@ -7,7 +7,7 @@ If you use any of this code, please cite the following publication:
 ```bibtex
 @article{Sachs2026STELLA,
   title={STELLA: A modular framework for SpatioTemporal Event-based Lagrangian particLe trAcking},
-  author={Sachs, Sebastian and Jung, Steffen and Kahl, Max and Willert, Christ and Keuper, Margret and Cierpka, Christian},
+  author={Sachs, Sebastian and Jung, Steffen and Kahl, Max and Willert, Christian and Keuper, Margret and Cierpka, Christian},
   pages = {X},
   volume = {X},
   number = {X},
