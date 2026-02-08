@@ -6,10 +6,13 @@ general discription; paper citation
 If you use any of this code, please cite the following publication:
 ```bibtex
 @inproceedings{mustermann2024deepev,
-  title={Deep Event-based Visual Tracking},
-  author={Mustermann, Max and Beispiel, Erika},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  year={2024}
+  title={STELLA: A modular framework for SpatioTemporal Event-based Lagrangian particLe trAcking},
+  author={Sachs, Sebastian and Jung, Steffen and Kahl, Max and Willert, Christ and Keuper, Margret and Cierpka, Christian},
+  pages = {X},
+  volume = {X},
+  number = {X},
+  journal = {Experiments in Fluids},
+  year={2026}
 }
 ```
 # Requirements
