@@ -16,7 +16,9 @@ If you use any of this code, please cite the following publication:
 }
 ```
 # Requirements
--
+```
+conda create -y -n STELLA python=12.12 pip
+```
 # Install
 1) install STELLA
 clone git
