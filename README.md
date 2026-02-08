@@ -1,10 +1,16 @@
 # STELLA - a modular framework for StatioTemporal Event-based Lagrangian particLe trAcking
 general discription; paper citation 
-[Deep Event-based Visual Tracking](https://arxiv.org/abs/xxxx.xxxxx)
+[STELLA](https://arxiv.org/abs/xxxx.xxxxx)
 
 
 If you use any of this code, please cite the following publication:
-
+```bibtex
+@inproceedings{mustermann2024deepev,
+  title={Deep Event-based Visual Tracking},
+  author={Mustermann, Max and Beispiel, Erika},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  year={2024}
+}
 
 # Requirements
 -
