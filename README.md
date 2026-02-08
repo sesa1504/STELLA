@@ -18,20 +18,20 @@ If you use any of this code, please cite the following publication:
 
 # Install
 1) install STELLA
-  ```
-  git clone https://github.com/sesa1504/STELLA.git
-  cd STELLA
-  ```
-Create a new python environment using python 3.12.x:
-```
-conda create -y -n STELLA python=3.12.12 pip
-conda activate STELLA
-```
-Install dependencies:
-```
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+    ```
+    git clone https://github.com/sesa1504/STELLA.git
+    cd STELLA
+    ```
+    Create a new python environment using python 3.12.x:
+    ```
+    conda create -y -n STELLA python=3.12.12 pip
+    conda activate STELLA
+    ```
+    Install dependencies:
+    ```
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
 
 2) OpenEB
 To read .raw or .dat files, please install the open source SDK [OpenEB](https://github.com/prophesee-ai/openeb) from prophesee by following the instructions given in the git. Once OpenEB is successfully installed, make sure to add the following files to your python paths:
