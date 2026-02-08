@@ -18,10 +18,10 @@ If you use any of this code, please cite the following publication:
 
 # Install
 1) install STELLA
-```
-git clone https://github.com/sesa1504/STELLA.git
-cd STELLA
-```
+  ```
+  git clone https://github.com/sesa1504/STELLA.git
+  cd STELLA
+  ```
 Create a new python environment using python 3.12.x:
 ```
 conda create -y -n STELLA python=3.12.12 pip
