@@ -11,7 +11,7 @@ If you use any of this code, please cite the following publication:
   booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
   year={2024}
 }
-
+```
 # Requirements
 -
 # Install
