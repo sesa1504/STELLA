@@ -40,8 +40,11 @@ If you use any of this code, please cite the following publication:
     [path to openeb folder]\openeb\sdk\modules\core\python\pypkg
     [path to openeb folder]\openeb\build\py3\Release
     ```
+
+    Alternatively, you can use the standalone code `utils/convert_to_npz.py` to convert from .raw or .dat to .npz by utilizing the prophesee SDK.
+    
 # Datasets
-Under `datasets/` you will find synthetic and experimental data as test cases. These datasets are rather small and can be used to try out different functionalities of STELLA.
+Under `/datasets/` you will find synthetic and experimental data as test cases. These datasets are rather small and can be used to try out different functionalities of STELLA.
 
 Larger datasets used as Benchmark and to train artificial neural networks can be found here: [datasets](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
@@ -54,4 +57,4 @@ Larger datasets used as Benchmark and to train artificial neural networks can be
 
 4) Validation
 # Handling output
--
+For further usage and plotting, the particle tracks saved in the validation step can be processed in python. An example data handling if provided in the standalone code `utils/plot_results.py`.
