@@ -1,2 +1,2 @@
-# STELLA
-STELLA - a modular framework for statiotemporal event-based Lagrangian particle tracking
+# STELLA - a modular framework for StatioTemporal Event-based Lagrangian particLe trAcking
+general discription
