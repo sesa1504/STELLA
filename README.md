@@ -49,7 +49,7 @@ Under `/datasets/` you will find synthetic and experimental data as test cases. 
 Larger datasets used as Benchmark and to train artificial neural networks can be found here: [datasets](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
 # Quick start guide
-As a small tutorial, the processing of experimental data is exemplified below:
+To start the GUI, run `main.py`. As a small tutorial, the processing of experimental data is exemplified below:
 1) Preprocessing
     - select `datasets/experimental.npz` as data file and click on `load data`
     - set the accumulation time to 2 ms
