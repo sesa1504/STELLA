@@ -41,8 +41,10 @@ If you use any of this code, please cite the following publication:
     [path to openeb folder]\openeb\build\py3\Release
     ```
 # Datasets
-example data
-larger datasets
+Under `datasets/` you will find synthetic and experimental data as test cases. These datasets are rather small and can be used to try out different functionalities of STELLA.
+
+Larger datasets used as Benchmark and to train artificial neural networks can be found here: [datasets](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
+
 # Quick start guide
 1) Preprocessing
 
