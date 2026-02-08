@@ -53,7 +53,7 @@ To start the GUI, run `main.py`. As a small tutorial, the processing of experime
 1) Preprocessing
     - select `datasets/experimental.npz` as data file and click on `load data`
     - set the accumulation time to 2 ms
-    - screenshot
+![Preprocessing](images/Preprocessing.png)
 3) Detection
     - in the detection tab, select `pixelwise extension` as detection method
     - using default settings, click on `Test run` to perform the detection on the first frame
