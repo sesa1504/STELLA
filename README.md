@@ -5,7 +5,7 @@ general discription; paper citation
 
 If you use any of this code, please cite the following publication:
 ```bibtex
-@inproceedings{mustermann2024deepev,
+@article{Sachs2026STELLA,
   title={STELLA: A modular framework for SpatioTemporal Event-based Lagrangian particLe trAcking},
   author={Sachs, Sebastian and Jung, Steffen and Kahl, Max and Willert, Christ and Keuper, Margret and Cierpka, Christian},
   pages = {X},
@@ -18,7 +18,16 @@ If you use any of this code, please cite the following publication:
 # Requirements
 -
 # Install
--
+1) install STELLA
+clone git
+navidate to main folder
+pip -r requirements.txt
+2) OpenEB
+To read .raw or .dat files, please install the open source SDK [OpenEB](https://github.com/prophesee-ai/openeb) from prophesee by following the instructions given in the git. Once OpenEB is successfully installed, make sure to add the following files to your python paths:
+``
+[path to openeb folder]\openeb\sdk\modules\core\python\pypkg
+[path to openeb folder]\openeb\build\py3\Release
+``
 # Datasets
 example data
 larger datasets
