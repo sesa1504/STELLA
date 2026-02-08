@@ -24,6 +24,7 @@ navidate to main folder
 pip -r requirements.txt
 2) OpenEB
 To read .raw or .dat files, please install the open source SDK [OpenEB](https://github.com/prophesee-ai/openeb) from prophesee by following the instructions given in the git. Once OpenEB is successfully installed, make sure to add the following files to your python paths:
+
 ``
 [path to openeb folder]\openeb\sdk\modules\core\python\pypkg
 [path to openeb folder]\openeb\build\py3\Release
