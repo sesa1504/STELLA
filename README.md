@@ -41,7 +41,7 @@ If you use any of this code, please cite the following publication:
     [path to openeb folder]\openeb\build\py3\Release
     ```
 
-    Alternatively, you can use the standalone code `utils/convert_to_npz.py` to convert from .raw or .dat to .npz by utilizing the prophesee SDK.
+    Alternatively, you can use the standalone code `utils/convert_to_npz.py` to convert from .raw or .dat to .npz or .mat by utilizing the prophesee SDK.
     
 # Datasets
 Under `/datasets/` you will find synthetic and experimental data as test cases. These datasets are rather small and can be used to try out different functionalities of STELLA.
