@@ -88,6 +88,6 @@ To start the GUI, run `main.py`. As a small tutorial, the processing of experime
       
 ![validation](images/validation.png)
 - in the lower left panel, the validated tracks can be saved as .npz or .mat file
-- for further post processing, see `utils/plot_results.py` regarding handling of the output data
+- for further post processing, see `plot_results.py` regarding handling of the output data
 # Handling output
-For further usage and plotting, the particle tracks saved in the validation step can be processed in python. An example data handling if provided in the standalone code `utils/plot_results.py`.
+For further usage and plotting, the particle tracks saved in the validation step can be processed in python. An example data handling if provided in the standalone code `plot_results.py`.
