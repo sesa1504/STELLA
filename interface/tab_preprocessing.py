@@ -244,10 +244,9 @@ class PreprocessingTab:
                 width=800,
                 height=500,
             ):
+                dpg.add_file_extension(".npz", color=(150, 255, 150, 255))
                 dpg.add_file_extension(".mat", color=(150, 255, 150, 255))
                 dpg.add_file_extension(".raw", color=(150, 255, 150, 255))
-                dpg.add_file_extension(".dat", color=(150, 255, 150, 255))
-                dpg.add_file_extension(".npz", color=(150, 255, 150, 255))
 
     def _build_preprocessing_parameters_panel(self) -> None:
         try:
@@ -315,8 +314,8 @@ class PreprocessingTab:
             dpg.set_value("validation_status", "No file selected")
             return
         try:
+            dpg.set_value("validation_status", "loading...")
             loaded = load_data_file(self.data_file)
-            dpg.set_value("validation_status", loaded.status_message)
 
             if loaded.width is not None:
                 self.params["width"] = loaded.width
@@ -326,6 +325,7 @@ class PreprocessingTab:
             self.last_loaded_data = loaded.data
             self.last_loaded_file_ext = loaded.file_ext
             self.load_data_preview()
+            dpg.set_value("validation_status", loaded.status_message)
             self.log_status(f"File validated successfully: {self.data_file}")
         except Exception as exc:
             dpg.set_value("validation_status", f"Error: {exc}")
