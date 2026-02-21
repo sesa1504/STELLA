@@ -3,9 +3,6 @@ from __future__ import annotations
 from typing import Any, Optional, Sequence, Tuple
 import numpy as np
 
-OPENEB_AVAILABLE = False
-OpenEBLoader = None
-
 class EventDataHelper:
     @staticmethod
     def extract_event_points(
@@ -15,7 +12,7 @@ class EventDataHelper:
             return None
         file_ext = file_ext.lower()
         
-        if file_ext in (".raw", ".dat") and isinstance(data, dict):
+        if file_ext in (".raw") and isinstance(data, dict):
             return EventDataHelper._events_from_mat(data)
         
         if file_ext == ".npy":

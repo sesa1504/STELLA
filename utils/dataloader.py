@@ -5,13 +5,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import numpy as np
-
-try:
-    from metavision_core.event_io import EventsIterator
-    METAVISION_AVAILABLE = True
-except Exception:
-    EventsIterator = None
-    METAVISION_AVAILABLE = False
+from utils.pyebiv import pyEBIV as EBIV
 
 @dataclass
 class LoadedData:
@@ -22,47 +16,27 @@ class LoadedData:
 
     width: Optional[int] = None
     height: Optional[int] = None
-    openeb_info: Optional[dict[str, Any]] = None
 
 def _load_events_with_metavision(
     file_path: str, delta_t: int = 1000
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Optional[int], Optional[int]]:
-
-    if not METAVISION_AVAILABLE or EventsIterator is None:
-        raise ImportError("OpenEB not available (cannot import EventsIterator).")
-
-    mv_iterator = EventsIterator(input_path=file_path, delta_t=delta_t)
+    
+    evData = EBIV()
+    evData.setDebugLevel(0) 
+    evData.loadRaw(file_path)
 
     width: Optional[int] = None
     height: Optional[int] = None
     try:
-        h, w = mv_iterator.get_size()
+        h, w = evData.sensorSize()
         height, width = int(h), int(w)
     except Exception:
         pass
-
-    xs_chunks: list[np.ndarray] = []
-    ys_chunks: list[np.ndarray] = []
-    ts_chunks: list[np.ndarray] = []
-    ps_chunks: list[np.ndarray] = []
-
-    for evs in mv_iterator:
-        xs_chunks.append(np.asarray(evs["x"]))
-        ys_chunks.append(np.asarray(evs["y"]))
-        ts_chunks.append(np.asarray(evs["t"]))
-        ps_chunks.append(np.asarray(evs["p"]))
-
-    if not xs_chunks:
-        x = np.array([], dtype=np.int16)
-        y = np.array([], dtype=np.int16)
-        t = np.array([], dtype=np.int64)
-        p = np.array([], dtype=np.int8)
-    else:
-        x = np.concatenate(xs_chunks)
-        y = np.concatenate(ys_chunks)
-        t = np.concatenate(ts_chunks)
-        p = np.concatenate(ps_chunks)
-
+    
+    t = np.array(evData.time())
+    x = np.array(evData.x())
+    y = np.array(evData.y())
+    p = np.array(evData.p())
     return x, y, t, p, width, height
 
 
@@ -77,11 +51,9 @@ def load_data_file(file_path: str) -> LoadedData:
     status = ""
     width: Optional[int] = None
     height: Optional[int] = None
-    openeb_info: Optional[dict[str, Any]] = None
 
     if file_ext == ".mat":
         from scipy.io import loadmat
-
         data = loadmat(file_path)
         status = "Valid .mat file."
 
@@ -94,21 +66,15 @@ def load_data_file(file_path: str) -> LoadedData:
             data = {k: npz[k] for k in npz.files}
         status = f"Valid .npz file. Keys: {list(data.keys())[:8]}"
 
-    elif file_ext in (".raw", ".dat"):
+    elif file_ext in (".raw"):
         size_mb = os.path.getsize(file_path) / 1024 / 1024
-        if not METAVISION_AVAILABLE:
-            status = f"Valid {file_ext} file. Size: {size_mb:.2f} MB (Metavision SDK NOT available)"
-        else:
-            try:
-                x, y, t, p, w, h = _load_events_with_metavision(file_path, delta_t=1000)
-                data = {"x": x, "y": y, "ts": t, "p": p}
-                width, height = w, h
-                status = f"Loaded {file_ext} via OpenEB. Size: {size_mb:.2f} MB"
-                if width is not None and height is not None:
-                    status += f", Resolution: {width}x{height}"
-                status += f", Events: {int(x.size):,}"
-            except Exception as exc:
-                status = f"Error loading {file_ext} via OpenEB: {exc}"
+        try:
+            x, y, t, p, w, h = _load_events_with_metavision(file_path, delta_t=1000)
+            data = {"x": x, "y": y, "ts": t, "p": p}
+            width, height = w, h
+            status = f"Loaded {file_ext} file."
+        except Exception as exc:
+            status = f"Error loading {file_ext} file: {exc}"
     elif file_ext in (".bin", ".txt"):
         size_mb = os.path.getsize(file_path) / 1024 / 1024
         status = f"Valid {file_ext} file. Size: {size_mb:.2f} MB"
@@ -122,7 +88,6 @@ def load_data_file(file_path: str) -> LoadedData:
         status_message=status,
         width=width,
         height=height,
-        openeb_info=openeb_info,
     )
 
 
