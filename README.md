@@ -1,5 +1,5 @@
 # STELLA - a modular framework for StatioTemporal Event-based Lagrangian particLe trAcking
-We introduce STELLA (v1.0.0), a modular framework for **s**tatio**t**emporal **e**vent-based **L**agrangian partic**l**e tr**a**cking in fluid flows. The framework is implemented as a GUI in python and takes the raw event stream obtained from an event-based camera as input. Once the data is loaded, the processing is done in four steps: Preprocessing, Detection, Tracking, Validation. In preprocessing, a ROI can be set in time and space and the filtered events can be saved. Subsequently, different algorithms for direct processing and image-based detection can be used to identify clustered events associated to individual particles. Based on the clustered events, particle tracks (position, velocity) can be derived by using a Kalman filter, spline fitting or hybrid approaches. Finally, a track quality filter and a neighborhood filter can be applied to reject spurious tracks during validation. In every step, the evaluation results can be saved and loaded in a way that also just single modules of STELLA can be used. For further information, please find our paper here: [STELLA](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
+We introduce STELLA (v1.0.1), a modular framework for **s**tatio**t**emporal **e**vent-based **L**agrangian partic**l**e tr**a**cking in fluid flows. The framework is implemented as a GUI in python and takes the raw event stream obtained from an event-based camera as input. Once the data is loaded, the processing is done in four steps: Preprocessing, Detection, Tracking, Validation. In preprocessing, a ROI can be set in time and space and the filtered events can be saved. Subsequently, different algorithms for direct processing and image-based detection can be used to identify clustered events associated to individual particles. Based on the clustered events, particle tracks (position, velocity) can be derived by using a Kalman filter, spline fitting or hybrid approaches. Finally, a track quality filter and a neighborhood filter can be applied to reject spurious tracks during validation. In every step, the evaluation results can be saved and loaded in a way that also just single modules of STELLA can be used. For further information, please find our paper here: [STELLA](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 
 ![Pipeline Overview](images/workflow.png)
 
@@ -17,7 +17,7 @@ If you use any of this code, please cite the following publication:
 ```
 
 # Install
-1) install STELLA
+install STELLA
     ```
     git clone https://github.com/sesa1504/STELLA.git
     cd STELLA
@@ -33,14 +33,7 @@ If you use any of this code, please cite the following publication:
     pip install -r requirements.txt
     ```
 
-2) To read .raw or .dat files, please install the open source SDK [OpenEB](https://github.com/prophesee-ai/openeb) from prophesee by following the instructions given in the git. Once OpenEB is successfully installed, make sure to add the following files to your python paths:
-    
-    ```
-    [path to openeb folder]\openeb\sdk\modules\core\python\pypkg
-    [path to openeb folder]\openeb\build\py3\Release
-    ```
-
-    Alternatively, you can use the standalone code `utils/convert_to_npz.py` to convert from .raw or .dat to .npz or .mat by utilizing the prophesee SDK.
+Hint: STELLA is able to read .raw files. However, to reduce loading time, you can use the standalone code `utils/convert_to_npz.py` or `utils/convert_to_npz_pyebiv.py` to convert from .raw or .dat to .npz or .mat.
     
 # Datasets
 Under `datasets/` you will find synthetic and experimental data as test cases. These datasets are rather small and can be used to try out different functionalities of STELLA.
@@ -48,7 +41,7 @@ Under `datasets/` you will find synthetic and experimental data as test cases. T
 Larger datasets used as Benchmark and to train artificial neural networks can be found here upon final publication of our paper.
 
 # Quick start guide
-To start the GUI, run `python main.py`. As a small tutorial, the processing of experimental data is exemplified below:
+To start the GUI, run `python main.py`. Changes in the set parameters are confirmed by pressing the enter key. As a small tutorial, the processing of experimental data is exemplified below:
 
 1) **Preprocessing**
 - select `datasets/experimental.npz` as data file and click on `load data`
