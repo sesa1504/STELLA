@@ -18,20 +18,25 @@ If you use any of this code, please cite the following publication:
 
 # Install
 install STELLA
-    ```
-    git clone https://github.com/sesa1504/STELLA.git
-    cd STELLA
-    ```
-    Create a new python environment using python 3.12.x:
-    ```
-    conda create -y -n STELLA python=3.12.12 pip
-    conda activate STELLA
-    ```
-    Install dependencies:
-    ```
-    pip install --upgrade pip
-    pip install -r requirements.txt
-    ```
+
+```
+git clone https://github.com/sesa1504/STELLA.git
+cd STELLA
+```
+
+Create a new python environment using python 3.12.x:
+
+```
+conda create -y -n STELLA python=3.12.12 pip
+conda activate STELLA
+```
+
+Install dependencies:
+
+```
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
 Hint: STELLA is able to read .raw files. However, to reduce loading time, you can use the standalone code `utils/convert_to_npz.py` or `utils/convert_to_npz_pyebiv.py` to convert from .raw or .dat to .npz or .mat.
     
