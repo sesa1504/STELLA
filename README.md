@@ -17,7 +17,7 @@ If you use any of this code, please cite the following publication:
 ```
 
 # Install
-install STELLA
+Clone GitHub repo:
 
 ```
 git clone https://github.com/sesa1504/STELLA.git
