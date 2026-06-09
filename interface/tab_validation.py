@@ -5,6 +5,7 @@ from typing import Any, Optional, TYPE_CHECKING
 
 import dearpygui.dearpygui as dpg
 import numpy as np
+import pandas as pd
 from pathlib import Path
 from matplotlib.colors import ListedColormap
 from datetime import datetime
@@ -992,6 +993,103 @@ class ValidationTab:
         ctx_bytes = pickle.dumps(ctx2, protocol=pickle.HIGHEST_PROTOCOL)
         return result_bytes, ctx_bytes
     
+    def _build_valid_tracks_dataframe(self) -> pd.DataFrame:
+        if self.tracking_tab is None or getattr(self.tracking_tab, "last_result", None) is None:
+            raise ValueError("No tracking results available. Run Tracking first.")
+    
+        flag_points = getattr(self, "flag_points", None)
+        if flag_points is None:
+            raise ValueError("No validation flags available. Run Validation first.")
+    
+        src = self.tracking_tab.last_result
+    
+        def _get(obj, name):
+            v = getattr(obj, name, None)
+            if v is None and isinstance(obj, dict):
+                v = obj.get(name)
+            return v
+    
+        x_plot = _get(src, "x_plot")
+        y_plot = _get(src, "y_plot")
+        x_plotv = _get(src, "x_plotv")
+        y_plotv = _get(src, "y_plotv")
+        t_plot = _get(src, "t_plot")
+    
+        if any(v is None for v in (x_plot, y_plot, x_plotv, y_plotv, t_plot)):
+            raise ValueError("Tracking output incomplete (missing x/y/v/t).")
+    
+        if not isinstance(x_plot, (list, tuple)):
+            x_plot = [x_plot]
+        if not isinstance(y_plot, (list, tuple)):
+            y_plot = [y_plot]
+        if not isinstance(x_plotv, (list, tuple)):
+            x_plotv = [x_plotv]
+        if not isinstance(y_plotv, (list, tuple)):
+            y_plotv = [y_plotv]
+        if not isinstance(t_plot, (list, tuple)):
+            t_plot = [t_plot]
+    
+        n_tracks = min(
+            len(x_plot),
+            len(y_plot),
+            len(x_plotv),
+            len(y_plotv),
+            len(t_plot),
+            len(flag_points),
+        )
+    
+        rows = []
+        track_id = 0
+    
+        for i in range(n_tracks):
+            t = np.asarray(t_plot[i], dtype=float).ravel()
+            x = np.asarray(x_plot[i], dtype=float).ravel()
+            y = np.asarray(y_plot[i], dtype=float).ravel()
+            u = np.asarray(x_plotv[i], dtype=float).ravel()
+            v = np.asarray(y_plotv[i], dtype=float).ravel()
+            fp = np.asarray(flag_points[i], dtype=bool).ravel()
+    
+            n = min(len(t), len(x), len(y), len(u), len(v), len(fp))
+            if n == 0:
+                continue
+    
+            t = t[:n]
+            x = x[:n]
+            y = y[:n]
+            u = u[:n]
+            v = v[:n]
+            fp = fp[:n]
+    
+            valid = (
+                fp
+                & np.isfinite(t)
+                & np.isfinite(x)
+                & np.isfinite(y)
+                & np.isfinite(u)
+                & np.isfinite(v)
+            )
+    
+            if not np.any(valid):
+                continue
+    
+            n_valid = int(np.count_nonzero(valid))
+    
+            rows.append(pd.DataFrame({
+                "t": t[valid],
+                "x": x[valid],
+                "y": y[valid],
+                "u": u[valid],
+                "v": v[valid],
+                "trackid": np.full(n_valid, track_id, dtype=int),
+            }))
+    
+            track_id += 1
+    
+        if not rows:
+            return pd.DataFrame(columns=["t", "x", "y", "u", "v", "trackid"])
+    
+        return pd.concat(rows, ignore_index=True)
+    
     def save_validation_results(self, sender=None, app_data=None, user_data=None):
         try:
             path = str(dpg.get_value("vali_save_results_file_input") or "").strip()
@@ -1025,9 +1123,31 @@ class ValidationTab:
                     },
                     do_compression=True,
                 )
+                
+            tracks_df = self._build_valid_tracks_dataframe()
+
+            tracks_path = p.with_name(f"{p.stem}_tracks.npz")
+            # tracks_df_bytes = pickle.dumps(tracks_df, protocol=pickle.HIGHEST_PROTOCOL)
+            
+            # np.savez_compressed(
+            #     tracks_path,
+            #     tracks_df_pickle=np.frombuffer(tracks_df_bytes, dtype=np.uint8),
+            #     n_rows=np.array([len(tracks_df)], dtype=np.int64),
+            #     columns=np.array(["t", "x", "y", "u", "v", "trackid"]),
+            # )
+            np.savez_compressed(
+                tracks_path,
+                t=tracks_df["t"].to_numpy(dtype=np.float64),
+                x=tracks_df["x"].to_numpy(dtype=np.float64),
+                y=tracks_df["y"].to_numpy(dtype=np.float64),
+                u=tracks_df["u"].to_numpy(dtype=np.float64),
+                v=tracks_df["v"].to_numpy(dtype=np.float64),
+                trackid=tracks_df["trackid"].to_numpy(dtype=np.int64),
+            )
     
-            dpg.set_value("vali_save_results_status", f"Saved: {p}")
+            dpg.set_value("vali_save_results_status", f"Saved: {p} and {tracks_path}")
             self._status_log_append(f"Saved validated tracks: {p}")
+            self._status_log_append(f"Saved valid track table: {tracks_path}")
         except Exception as e:
             dpg.set_value("vali_save_results_status", f"Save failed: {e}")
             self._status_log_append(f"Save failed: {e}")

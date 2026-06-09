@@ -92,6 +92,7 @@ class DetectionTab:
         self._run_button_tag = "det_run_button"
         self.params.setdefault("N_pixelwise", 5)
         self.params.setdefault("overlap", 0.4)
+        self.params.setdefault("structure_size", 1)
         
         self.params.setdefault("epsilon", 7.5)  
         self.params.setdefault("minPts", 20)    
@@ -263,7 +264,7 @@ class DetectionTab:
         
         with dpg.group(tag=self._group_pixelwise, show=False):
             dpg.add_input_int(
-                label="minimum number of activated pixels per cluster",
+                label="minimum number of activated pixel per cluster",
                 default_value=int(self.params.get("N_pixelwise", 5)),
                 min_value=1,
                 min_clamped=True,
@@ -294,6 +295,29 @@ class DetectionTab:
                         "used to match found clusters to existing clusters.\n\n"
                         "0.0: no temporal overlap\n"
                         "1.0: full overlap"
+                    )
+                    
+            with dpg.group(horizontal=True):
+                dpg.add_input_int(
+                    label="mask size",
+                    default_value=int(self.params.get("structure_size", 1)),
+                    min_value=1,
+                    min_clamped=True,
+                    width=150,
+                    callback=lambda s, a, u: self.params.__setitem__("structure_size", int(a)),
+                    tag="det_input_pixelwise_structure_size",
+                )
+            
+                dpg.add_button(label="?", width=22, height=22, tag="structure_size_info_btn")
+                dpg.bind_item_theme("structure_size_info_btn", info_button_theme)
+            
+                with dpg.popup("structure_size_info_btn", mousebutton=dpg.mvMouseButton_Left):
+                    dpg.add_text(
+                        "Defines the square binary dilation mask (NxN)\n"
+                        "used in pixelwise extension before labeling.\n\n"
+                        "3 applies a 3x3 mask.\n"
+                        "Larger values connect pixels over larger gaps;\n"
+                        "odd values are recommended for a centered mask."
                     )
         
         with dpg.group(tag=self._group_kdtree, show=False):
@@ -725,6 +749,7 @@ class DetectionTab:
             "N": int(self.params.get("N", 1)),
             "multiN": multiN,
             "overlap": float(self.params.get("overlap", 0.4)),
+            "structure_size": int(self.params.get("structure_size", 1)),
     
             "height": self.params["width"],
             "width": self.params["height"],
@@ -1867,6 +1892,7 @@ class DetectionTab:
         preferred_keys = [
             "N",
             "overlap",
+            "structure_size",
             "threshold",
             "min_cluster_size",
             "max_cluster_size",
@@ -1947,6 +1973,14 @@ class DetectionTab:
                 v = int(ctx_params["N_pixelwise"])
                 self.params["N_pixelwise"] = v
                 dpg.set_value("det_input_min_pixel", v)
+            except Exception:
+                pass
+            
+        if "structure_size" in ctx_params and dpg.does_item_exist("det_input_pixelwise_structure_size"):
+            try:
+                v = int(ctx_params["structure_size"])
+                self.params["structure_size"] = v
+                dpg.set_value("det_input_pixelwise_structure_size", v)
             except Exception:
                 pass
     
