@@ -5,6 +5,7 @@ from utils_v2 import *
 from scipy.ndimage import label
 from collections import defaultdict
 from scipy.spatial.distance import pdist, squareform
+from scipy.ndimage import binary_dilation
 import collections
 warnings.filterwarnings("ignore", category=FutureWarning)
 
@@ -12,6 +13,14 @@ try:
     test_mode
 except NameError:
     test_mode = False
+    
+try:
+    structure_size
+except NameError:
+    structure_size = 1
+
+structure_size = max(1, int(structure_size))
+structure = np.ones((structure_size, structure_size), dtype=bool)
 
 # %% init
 stop_event = globals().get("stop_event", None)
@@ -96,11 +105,12 @@ for multi in range(multiN):
                 valid = np.ones(len(x_clust))
                 
             elif pixelwise_extension:
-                structure = np.ones((1, 1), dtype=bool)        
+                structure = np.ones((structure_size, structure_size), dtype=bool)    
   
                 XY = np.column_stack((X-1,Y-1))
                 new_mask = np.zeros((height, width), dtype=bool)
                 new_mask[X-1,Y-1] = True
+                new_mask = binary_dilation(new_mask, structure=structure, iterations=1)
                 labeled, num_regions = label(new_mask)
                 
                 region_sizes = np.bincount(labeled.ravel())
@@ -265,37 +275,83 @@ for multi in range(multiN):
                     t_clust[track_id]   = np.append(t_clust[track_id], np.array(tmp_t))
                 
             elif pixelwise_extension:
-                XY = np.column_stack((X-1,Y-1))
-                new_mask = np.zeros((height, width), dtype=bool)
-                new_mask[X-1,Y-1] = True
-                labeled, num_regions = label(new_mask)
+                # XY = np.column_stack((X-1,Y-1))
+                # new_mask = np.zeros((height, width), dtype=bool)
+                # new_mask[X-1,Y-1] = True
+                # new_mask = binary_dilation(new_mask, structure=structure, iterations=1)
+                # labeled, num_regions = label(new_mask)
                 
-                region_sizes = np.bincount(labeled.ravel())
-                keep = region_sizes >= N_pixelwise
-                labeled[~keep[labeled]] = 0
-                new_labels = np.unique(labeled)
-                new_labels = new_labels[new_labels != 0]
+                # region_sizes = np.bincount(labeled.ravel())
+                # keep = region_sizes >= N_pixelwise
+                # labeled[~keep[labeled]] = 0
+                # new_labels = np.unique(labeled)
+                # new_labels = new_labels[new_labels != 0]
 
+                # region_coords = defaultdict(list)
+                # region_indices = defaultdict(list) 
+                
+                # xs, ys = np.nonzero(labeled > 0)
+                # for i, (x, y) in enumerate(zip(xs, ys)):
+                #     label_0 = labeled[x, y]
+                #     if label_0 in new_labels:
+                #         region_coords[label_0].append((x, y))
+                # pixel_to_indices = defaultdict(list)
+                # for i, (x_, y_) in enumerate(XY):
+                #     pixel_to_indices[(x_, y_)].append(i)
+                # for label_0 in region_coords:
+                #     coords = region_coords[label_0]
+                #     indices = []
+                #     for x, y in coords:
+                #         indices.extend(pixel_to_indices[(x, y)])  
+                #     region_coords[label_0] = np.array(coords, dtype=np.uint16)
+                #     region_indices[label_0] = np.array(indices, dtype=np.uint32)
+                
+                XY = np.column_stack((X - 1, Y - 1)).astype(np.int32)
+
+                # Originalmaske: enthält nur echte Pixel aus X/Y
+                orig_mask = np.zeros((height, width), dtype=bool)
+                orig_mask[XY[:, 0], XY[:, 1]] = True
+                
+                # Dilatierte Maske: nur zum Verbinden naher Regionen
+                dilated_mask = binary_dilation(orig_mask, structure=structure, iterations=1)
+                
+                # Labeling auf dilatierter Maske
+                labeled, num_regions = label(dilated_mask)
+                
+                # Für jeden Originalpunkt schauen:
+                # In welches dilatierte Label fällt dieser Originalpunkt?
+                labels_xy = labeled[XY[:, 0], XY[:, 1]]
+                
+                # Regiongrößen nur anhand echter Originalpixel zählen
+                region_sizes = np.bincount(labels_xy, minlength=labeled.max() + 1)
+                
+                keep = region_sizes >= N_pixelwise
+                
+                # Labels entfernen, die zu klein sind
+                labels_xy[~keep[labels_xy]] = 0
+                
+                new_labels = np.unique(labels_xy)
+                new_labels = new_labels[new_labels != 0]
+                
                 region_coords = defaultdict(list)
-                region_indices = defaultdict(list) 
+                region_indices = defaultdict(list)
                 
-                xs, ys = np.nonzero(labeled > 0)
-                for i, (x, y) in enumerate(zip(xs, ys)):
-                    label_0 = labeled[x, y]
-                    if label_0 in new_labels:
-                        region_coords[label_0].append((x, y))
-                pixel_to_indices = defaultdict(list)
-                for i, (x_, y_) in enumerate(XY):
-                    pixel_to_indices[(x_, y_)].append(i)
-                for label_0 in region_coords:
-                    coords = region_coords[label_0]
-                    indices = []
-                    for x, y in coords:
-                        indices.extend(pixel_to_indices[(x, y)])  
-                    region_coords[label_0] = np.array(coords, dtype=np.uint16)
-                    region_indices[label_0] = np.array(indices, dtype=np.uint32)
+                # Wichtig:
+                # region_coords und region_indices werden nur aus Originalpixeln gebaut
+                for i, (x, y) in enumerate(XY):
+                    label_0 = labels_xy[i]
                 
-                active_labelmap = np.zeros_like(new_mask, dtype=np.int32)  
+                    if label_0 == 0:
+                        continue
+                
+                    region_coords[label_0].append((x, y))
+                    region_indices[label_0].append(i)
+                
+                for label_0 in new_labels:
+                    region_coords[label_0] = np.array(region_coords[label_0], dtype=np.uint16)
+                    region_indices[label_0] = np.array(region_indices[label_0], dtype=np.uint32)
+                
+                active_labelmap = np.zeros_like(orig_mask, dtype=np.int32)  
                 active_labelmap[:, :] = -1  
                 
                 for i, region in enumerate(active_pixels):
@@ -305,6 +361,8 @@ for multi in range(multiN):
                     
                 active_temp =  [[] for _ in range(len(active_pixels))]
                 ind_temp = []
+                
+                assigned_region_labels = set()
                     
                 for label_0 in new_labels:
                     coords = region_coords[label_0]
@@ -314,8 +372,9 @@ for multi in range(multiN):
                     mean_x, mean_y = mean_coords[0], mean_coords[1]
 
                     if multi==1:
-                        max_x = 1280
-                        max_y = 720
+                        max_x, max_y = active_labelmap.shape
+                        # max_x = 1280
+                        # max_y = 720
                         
                         coords_i = coords.astype(np.int32, copy=False)  
                         
@@ -334,7 +393,8 @@ for multi in range(multiN):
                         coords_roi[:, 1] -= min_y
                         
                         mask[coords_roi[:, 0], coords_roi[:, 1]] = True
-                        mask_dilated = mask
+                        mask_dilated = binary_dilation(mask, structure=structure, iterations=1)
+                        # mask_dilated = mask
                         
                         coords_exp = np.argwhere(mask_dilated).astype(np.int32)
                         coords_exp[:, 0] += min_x
@@ -371,6 +431,8 @@ for multi in range(multiN):
                         active_temp[i_best].append(xx)
                         ind_temp.append(i_best)
                         labeled[xx[:, 0], xx[:, 1]] = 0
+                        
+                        assigned_region_labels.add(label_0)
                     else:
                         cluster_centers = {
                                 i: np.mean(active_pixels[i], axis=0)
@@ -429,6 +491,7 @@ for multi in range(multiN):
                             active_temp[i_best].append(xx)
                             ind_temp.append(i_best)
                             labeled[xx[:, 0], xx[:, 1]] = 0
+                        assigned_region_labels.add(label_0)
                         
                 ind_temp = np.unique(ind_temp)
                 for ii in range(len(active_pixels)):
@@ -496,23 +559,45 @@ for multi in range(multiN):
                         idx.append(idx_unmatched)
                     idx = np.array(idx)
                 elif pixelwise_extension==True:
-                    if np.max(labeled) > 0:
-                        new_labels = np.unique(labeled)
-                        new_labels = new_labels[new_labels != 0]
-                        idx = np.full(len(X), -1)
+                    remaining_labels = [
+                        region_id
+                        for region_id in region_indices.keys()
+                        if region_id not in assigned_region_labels
+                    ]
+                    
+                    idx = np.full(len(X), -1, dtype=np.int32)
+                    
+                    m = 0
+                    
+                    for region_id in remaining_labels:
+                        all_indices = region_indices[region_id]
+                    
+                        if len(all_indices) == 0:
+                            continue
+                    
+                        if np.count_nonzero(T[all_indices] > 0) > 5:
+                            idx[all_indices] = region_id
+                            m += 1
+                    
+                    if m == 0:
+                        idx = np.array([], dtype=np.int32)
+                    # if np.max(labeled) > 0:
+                    #     new_labels = np.unique(labeled)
+                    #     new_labels = new_labels[new_labels != 0]
+                    #     idx = np.full(len(X), -1)
 
-                        m=0
-                        for region_id in new_labels:
-                            all_indices = []
-                            for coord in region_coords[region_id]:
-                                all_indices.extend(pixel_to_indices.get(tuple(coord), []))
-                            if np.count_nonzero(T[all_indices] > 0) > 5:
-                                idx[all_indices] = region_id
-                                m+=1
-                        if m==0:
-                            idx = np.array([])
-                    else:
-                        idx = np.array([])
+                    #     m=0
+                    #     for region_id in new_labels:
+                    #         all_indices = []
+                    #         for coord in region_coords[region_id]:
+                    #             all_indices.extend(pixel_to_indices.get(tuple(coord), []))
+                    #         if np.count_nonzero(T[all_indices] > 0) > 5:
+                    #             idx[all_indices] = region_id
+                    #             m+=1
+                    #     if m==0:
+                    #         idx = np.array([])
+                    # else:
+                    #     idx = np.array([])
     
                 elif X.size > 0 and db_clustering==False:
                     idx = clustering(apply_hdbscan=apply_hdbscan,epsilon=epsilon,minPts=minPts,X=X,Y=Y)

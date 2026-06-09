@@ -61,11 +61,12 @@ def fit_model_bspline_fast(t, x, y, s, dt,RMS_threshold,both,factor):
     y = y_median
 
     if len(both)==0:
-        t_min = t[0]
-        t_max = t[-1] 
-        t_fit = np.arange(t_min, t_max, dt/factor, dtype=np.float64)
+        step = dt / factor
+        t_min = np.ceil(t[0] / step) * step
+        t_max = t[-1]
+        t_fit = np.arange(t_min, t_max, step, dtype=np.float64)
     else:
-        t_fit = t_fit = both[~np.isnan(both)]
+        t_fit = both[~np.isnan(both)]
     if len(t_fit) == 0:
         return np.array([]), np.array([]), np.array([]), np.array([]), np.array([])
 

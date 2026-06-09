@@ -69,7 +69,8 @@ if Kalman_afterwards or use_both or both2:
             y_est=y_est,
             Kalman_v2_both_optimized=Kalman_v2_both_optimized,
             Kalman_v2_both_buffer_optimized=Kalman_v2_both_buffer_optimized_afterwards,
-            dtt = dt
+            dtt = dt,
+            factor=resol
         )
     if lightweight_mode==False:
         ex_len = len(x_clust)
@@ -352,7 +353,8 @@ if use_hybrid:
             y_est=y_est,
             Kalman_v2_both_optimized=Kalman_v2_both_optimized,
             Kalman_v2_both_buffer_optimized=Kalman_v2_both_buffer_optimized_afterwards,
-            dtt = dt
+            dtt = dt,
+            factor = resol
         )
     if lightweight_mode==False:
         ex_len = len(x_clust)

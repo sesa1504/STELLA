@@ -132,9 +132,12 @@ def Kalman_v2_both_buffer_optimized_lightweight_afterwards(x, y, z, start_id, C,
         z_velocity[idx] = y_est[1]
         z_acceleration[idx] = y_est[2]
 
-    t_min = x[start_id]
-    t_max = x[-1]
+    # t_min = x[start_id]
+    # t_max = x[-1]
+    # dt_target = dtt / factor
     dt_target = dtt / factor
+    t_min = np.ceil(x[start_id] / dt_target) * dt_target
+    t_max = x[-1]
     total_steps = int((t_max - t_min) / dt_target) + 1
     t_query = np.zeros(total_steps)
 
@@ -200,7 +203,7 @@ def Kalman_v2_both_buffer_optimized_lightweight_afterwards(x, y, z, start_id, C,
 
 #used
 @jit(nopython=True,cache=True)
-def Kalman_v2_both_buffer_optimized_afterwards(x, y, z, start_id, C, Q, R, P, x_est, Py, y_est, rev, dtt):
+def Kalman_v2_both_buffer_optimized_afterwards(x, y, z, start_id, C, Q, R, P, x_est, Py, y_est, rev, dtt, factor):
     n = len(x) - start_id
 
     y_filtered = np.zeros(n)
@@ -259,27 +262,50 @@ def Kalman_v2_both_buffer_optimized_afterwards(x, y, z, start_id, C, Q, R, P, x_
             z_filtered[idx] = y_est[0]
             z_velocity[idx] = y_est[1]
             z_acceleration[idx] = y_est[2]
-        step = np.maximum(1,int(np.ceil((max(x)-min(x))/(dtt/4))))
-        indices = np.empty(step, dtype=np.int64)
-        for i in range(step):
-            indices[i] = int(i * n / step)
-        t_query = np.zeros(len(indices))
-        x_interp = np.zeros(len(indices))
-        x_interp_v = np.zeros(len(indices))
-        x_interp_a = np.zeros(len(indices))
-        y_interp = np.zeros(len(indices))
-        y_interp_v = np.zeros(len(indices))
-        y_interp_a = np.zeros(len(indices))
+            
+        dt_target = dtt / factor
+
+        t_min = np.ceil(x[start_id] / dt_target) * dt_target
+        t_max = x[-1]
         
-        for j in range(len(indices)):
-            idx = indices[j]
-            t_query[j] = x[start_id-1 + idx]
-            x_interp[j] = y_filtered[idx]
-            x_interp_v[j] = y_velocity[idx]
-            x_interp_a[j] = y_acceleration[idx]
-            y_interp[j] = z_filtered[idx]
-            y_interp_v[j] = z_velocity[idx]
-            y_interp_a[j] = z_acceleration[idx]
+        n_query = int(np.floor((t_max - t_min) / dt_target)) + 1
+    
+        t_query = np.zeros(n_query, dtype=np.float64)
+        for j in range(n_query):
+            t_query[j] = t_min + j * dt_target
+    
+        t_filtered = x[start_id:]
+    
+        x_interp = np.interp(t_query, t_filtered, y_filtered)
+        x_interp_v = np.interp(t_query, t_filtered, y_velocity)
+        x_interp_a = np.interp(t_query, t_filtered, y_acceleration)
+    
+        y_interp = np.interp(t_query, t_filtered, z_filtered)
+        y_interp_v = np.interp(t_query, t_filtered, z_velocity)
+        y_interp_a = np.interp(t_query, t_filtered, z_acceleration)
+        
+        
+        # step = np.maximum(1,int(np.ceil((max(x)-min(x))/(dtt/4))))
+        # indices = np.empty(step, dtype=np.int64)
+        # for i in range(step):
+        #     indices[i] = int(i * n / step)
+        # t_query = np.zeros(len(indices))
+        # x_interp = np.zeros(len(indices))
+        # x_interp_v = np.zeros(len(indices))
+        # x_interp_a = np.zeros(len(indices))
+        # y_interp = np.zeros(len(indices))
+        # y_interp_v = np.zeros(len(indices))
+        # y_interp_a = np.zeros(len(indices))
+        
+        # for j in range(len(indices)):
+        #     idx = indices[j]
+        #     t_query[j] = x[start_id-1 + idx]
+        #     x_interp[j] = y_filtered[idx]
+        #     x_interp_v[j] = y_velocity[idx]
+        #     x_interp_a[j] = y_acceleration[idx]
+        #     y_interp[j] = z_filtered[idx]
+        #     y_interp_v[j] = z_velocity[idx]
+        #     y_interp_a[j] = z_acceleration[idx]
     
     else:  
         x_est[1] = -x_est[1]

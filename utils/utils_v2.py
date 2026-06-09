@@ -41,7 +41,7 @@ def extend_list_of_arrays(lst, pad_length, array_shape):
     
 def process_index_afterwards(i, P, t_clust, x_clust, y_clust, 
                   C, Q, R, P_new, x_est, P_newz, y_est,
-                  Kalman_v2_both_optimized, Kalman_v2_both_buffer_optimized,dtt):
+                  Kalman_v2_both_optimized, Kalman_v2_both_buffer_optimized,dtt, factor):
     if len(t_clust[i])==0:
         return i, None  
     sort_idx = np.argsort(t_clust[i])
@@ -60,7 +60,7 @@ def process_index_afterwards(i, P, t_clust, x_clust, y_clust,
     xe = np.array([np.mean(x_clust[i][mask]), px, 0.0], dtype=np.float64)
     ye = np.array([np.mean(y_clust[i][mask]), py, 0.0], dtype=np.float64)
     P, xe, Pz, ye, t, x_p, y_p, xv_p, yv_p, xa_p, ya_p = Kalman_v2_both_buffer_optimized(
-        t_clust[i], x_clust[i], y_clust[i], 1, C, Q, R, P*10, xe, P*10, ye, 0, dtt
+        t_clust[i], x_clust[i], y_clust[i], 1, C, Q, R, P*10, xe, P*10, ye, 0, dtt, factor
     )
     return i, {
         "P": P, "xe": xe, "Pz": Pz, "ye": ye,
