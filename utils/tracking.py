@@ -19,13 +19,13 @@ else:
 
 P_new = [[] for _ in range(max_tracks)]
 P_newz = [[] for _ in range(max_tracks)]
-x_plot = [np.full(max_length,np.nan) for _ in range(max_tracks)]
-x_plota = [np.full(max_length,np.nan) for _ in range(max_tracks)]
-x_plotv = [np.full(max_length,np.nan) for _ in range(max_tracks)]
-y_plot = [np.full(max_length,np.nan) for _ in range(max_tracks)]
-y_plota = [np.full(max_length,np.nan) for _ in range(max_tracks)]
-y_plotv = [np.full(max_length,np.nan) for _ in range(max_tracks)]
-t_plot = [np.full(max_length,np.nan) for _ in range(max_tracks)]
+x_plot  = [np.array([], dtype=float) for _ in range(max_tracks)]
+x_plota = [np.array([], dtype=float) for _ in range(max_tracks)]
+x_plotv = [np.array([], dtype=float) for _ in range(max_tracks)]
+y_plot  = [np.array([], dtype=float) for _ in range(max_tracks)]
+y_plota = [np.array([], dtype=float) for _ in range(max_tracks)]
+y_plotv = [np.array([], dtype=float) for _ in range(max_tracks)]
+t_plot  = [np.array([], dtype=float) for _ in range(max_tracks)]
 track_to_cluster = np.full(len(x_plot), -1, dtype=int)
 x_est = [[] for _ in range(max_tracks)]
 y_est = [[] for _ in range(max_tracks)]
@@ -87,9 +87,21 @@ if Kalman_afterwards or use_both or both2:
     for i, result in results:
         if result is None:
             continue
-        n_new = len(result["x"])
-        P_new[i], x_est[i], P_newz[i], y_est[i], t_plot[i][0:n_new], x_plot[i][0:n_new], x_plotv[i][0:n_new], x_plota[i][0:n_new], y_plot[i][0:n_new], y_plotv[i][0:n_new], y_plota[i][0:n_new] = add_results(result,1,lightweight_mode)
+       res = add_results(result, 1, lightweight_mode)
+
+        P_new[i]   = res[0]
+        x_est[i]   = res[1]
+        P_newz[i]  = res[2]
+        y_est[i]   = res[3]
         
+        t_plot[i]  = np.asarray(res[4], dtype=float)
+        x_plot[i]  = np.asarray(res[5], dtype=float)
+        x_plotv[i] = np.asarray(res[6], dtype=float)
+        x_plota[i] = np.asarray(res[7], dtype=float)
+        
+        y_plot[i]  = np.asarray(res[8], dtype=float)
+        y_plotv[i] = np.asarray(res[9], dtype=float)
+        y_plota[i] = np.asarray(res[10], dtype=float)        
     if not both2 and not use_both:
         if correction:
             if lightweight_mode:
@@ -371,9 +383,21 @@ if use_hybrid:
     for i, result in results:
         if result is None:
             continue
-        n_new = len(result["x"])
-        P_new[i], x_est[i], P_newz[i], y_est[i], t_plot[i][0:n_new], x_plot[i][0:n_new], x_plotv[i][0:n_new], x_plota[i][0:n_new], y_plot[i][0:n_new], y_plotv[i][0:n_new], y_plota[i][0:n_new] = add_results(result,1,lightweight_mode)
+        res = add_results(result, 1, lightweight_mode)
 
+        P_new[i]   = res[0]
+        x_est[i]   = res[1]
+        P_newz[i]  = res[2]
+        y_est[i]   = res[3]
+        
+        t_plot[i]  = np.asarray(res[4], dtype=float)
+        x_plot[i]  = np.asarray(res[5], dtype=float)
+        x_plotv[i] = np.asarray(res[6], dtype=float)
+        x_plota[i] = np.asarray(res[7], dtype=float)
+        
+        y_plot[i]  = np.asarray(res[8], dtype=float)
+        y_plotv[i] = np.asarray(res[9], dtype=float)
+        y_plota[i] = np.asarray(res[10], dtype=float)
                     
     valid_idx = [i for i, a in enumerate(x_plot) if not np.isnan(a).all()]
     track_to_cluster = track_to_cluster[valid_idx]
