@@ -732,7 +732,7 @@ for multi in range(multiN):
                     if len(t_clust[i][L_before[i]:])>1:
                         L_before[i] = len(x_clust[i])
 
-                if steps[i]<buffer and (inactive_k[i] + 2) < k:
+                if steps[i]<buffer and steps[i] < 3 and (inactive_k[i] + 2) < k:
                     inactive[i] = 1
 
         del_[:] = 1
