@@ -157,7 +157,7 @@ for multi in range(multiN):
         
                 max_cluster = idx.max() if len(idx) > 0 else -1
                 
-                for i in range(max_cluster):
+                for i in range(max_cluster+1):
                     mask = idx == i
                     if not mask.any():
                         continue
