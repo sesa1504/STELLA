@@ -122,16 +122,10 @@ def update_cluster(x_m,y_m,t_m,i,X,Y,T,x_clust,y_clust,t_clust,idx,del_,steps,bu
             y_m[i] = np.median(Y[idx])
             t_m[i] = np.median(T[idx]) * 1e-6
 
-        if del_[i] == 1 and steps[i] >= buffer and steps[i]>steps_rev:
-            x_clust[i] = X[idx]
-            y_clust[i] = Y[idx]
-            t_clust[i] = T[idx]
-            ind_clust[i] = ind_global[idx]
-        else:
-            x_clust[i] = np.concatenate([x_clust[i], X[idx]])
-            y_clust[i] = np.concatenate([y_clust[i], Y[idx]])
-            t_clust[i] = np.concatenate([t_clust[i], T[idx]])
-            ind_clust[i] = np.concatenate([ind_clust[i], ind_global[idx]])
+        x_clust[i] = np.concatenate([x_clust[i], X[idx]])
+        y_clust[i] = np.concatenate([y_clust[i], Y[idx]])
+        t_clust[i] = np.concatenate([t_clust[i], T[idx]])
+        ind_clust[i] = np.concatenate([ind_clust[i], ind_global[idx]])
         steps[i] += 1
         inactive_k[i] = k
         return x_m, y_m, t_m, x_clust, y_clust, t_clust, steps, inactive_k, ind_clust
@@ -398,6 +392,8 @@ def repair_tracks(x_clust, y_clust, t_clust, ind_clust, steps, dt):
         y_clust[idx_source] = np.array([])
         t_clust[idx_source] = np.array([])
         ind_clust[idx_source] = np.array([])
+        steps[idx_target] += steps[idx_source]
+        steps[idx_source] = 0
     return x_clust, y_clust, t_clust, steps, ind_clust
 
 def repair_tracks_pseudoframes(
