@@ -87,7 +87,7 @@ if Kalman_afterwards or use_both or both2:
     for i, result in results:
         if result is None:
             continue
-       res = add_results(result, 1, lightweight_mode)
+        res = add_results(result, 1, lightweight_mode)
 
         P_new[i]   = res[0]
         x_est[i]   = res[1]
