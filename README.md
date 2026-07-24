@@ -42,7 +42,7 @@ Hint: STELLA is able to read .raw files. However, to reduce loading time, you ca
 # Datasets
 Under `datasets/` you will find synthetic and experimental data as test cases. These datasets are rather small and can be used to try out different functionalities of STELLA.
 
-Larger datasets used as Benchmark and to train artificial neural networks can be found here upon final publication of our paper.
+Larger datasets used as Benchmark and to train artificial neural networks can be found here: [zenodo](https://zenodo.org/records/21531421)
 
 # Quick start guide
 To start the GUI, run `python main.py`. Changes in the set parameters are confirmed by pressing the enter key. As a small tutorial, the processing of experimental data is exemplified below:
